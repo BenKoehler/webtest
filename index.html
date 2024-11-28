@@ -34,31 +34,8 @@
     <div id="missing-answer-caption-div"></div>
     <div id="missing-answer-list-div"></div>
     <table class="table table-sm" id="tabelle-ergebnisse" style="visibility: hidden">
-        <thead>
-        <tr>
-            <th></th>
-            <th class="text-center">Überlegenheit</th>
-            <th class="text-center">Kontrolle</th>
-            <th class="text-center">Gefallen</th>
-            <th class="text-center">Bequemlichkeit</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr>
-            <th class="text-end">Punkte:</th>
-            <td class="text-center" id="punkte-u"></td>
-            <td class="text-center" id="punkte-k"></td>
-            <td class="text-center" id="punkte-g"></td>
-            <td class="text-center" id="punkte-b"></td>
-        </tr>
-        <tr>
-            <th class="text-end">Probleme:</th>
-            <td class="text-center" id="probleme-u"></td>
-            <td class="text-center" id="probleme-k"></td>
-            <td class="text-center" id="probleme-g"></td>
-            <td class="text-center" id="probleme-b"></td>
-        </tr>
-        </tbody>
+        <thead id="tabelle-res-head"></thead>
+        <tbody id="tabelle-res-body"></tbody>
     </table>
 </div>
 
@@ -128,13 +105,13 @@
         }
     }
 
-    const width_small=767;
-    const width_tiny=552;
+    const width_small = 767;
+    const width_tiny = 552;
 
     function make_table() {
         const thead = document.getElementById("tabelle-fragebogen-head");
         const tbody = document.getElementById("tabelle-fragebogen");
-        tbody.innerHTML="";
+        tbody.innerHTML = "";
 
         if (width > width_small) {
             thead.innerHTML = `
@@ -175,22 +152,55 @@
                 tbody.appendChild(row);
             });
 
-        }
-        else if (width>width_tiny){
+        } else if (width > width_tiny) {
             thead.innerHTML = "";
 
             fragen.forEach((frage, index) => {
-                {
-                    const row = document.createElement("tr");
-                    row.innerHTML = `<td><b>${index + 1}</b>. ${frage}</td>`;
-                    tbody.appendChild(row);
-                }
-                {
-                    const row = document.createElement("tr");
-                    row.innerHTML = `
+                const row = document.createElement("tr");
+                row.innerHTML = `
                     <td>
-                        <div class="d-flex align-items-center mt-0 mb-3">
-                            <div class="text text-center" style="margin-right: 5px"><b>Stimmt:</b></div>
+                    <div class="d-flex flex-column">
+                    <div class="text text-center"><b>${index + 1}.</b> ${frage}</div>
+                    <div class="d-flex align-items-center mt-1 mb-3">
+                        <div class="text text-center" style="margin-right: 5px"><b>Stimmt:</b></div>
+                        <div class="btn-group" id="btn-group-frage${index}" role="group" style="margin-right: 10px">
+                            <input type="radio" class="btn-check" name="frage${index}" id="btnradio1-frage${index}" autocomplete="off" value="1" required>
+                            <label class="btn btn-outline-primary" for="btnradio1-frage${index}">Genau</label>
+
+                            <input type="radio" class="btn-check" name="frage${index}" id="btnradio2-frage${index}" autocomplete="off" value="0.5">
+                            <label class="btn btn-outline-secondary" for="btnradio2-frage${index}">Etwa</label>
+
+                            <input type="radio" class="btn-check" name="frage${index}" id="btnradio3-frage${index}" autocomplete="off" value="0">
+                            <label class="btn btn-outline-danger" for="btnradio3-frage${index}">Nicht</label>
+                        </div>
+
+                        <div class="text text-center" style="margin-right: 5px"><b>Stört dich das?</b></div>
+                        <div class="btn-group" role="group">
+                            <input type="radio" class="btn-check" name="problem${index}" id="btnradio1-problem${index}" autocomplete="off" value="1" required>
+                            <label class="btn btn-outline-primary" for="btnradio1-problem${index}">Ja</label>
+
+                            <input type="radio" class="btn-check" name="problem${index}" id="btnradio2-problem${index}" autocomplete="off" value="0">
+                            <label class="btn btn-outline-danger" for="btnradio2-problem${index}">Nein</label>
+                        </div>
+                    </div>
+                    </div>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        } else {
+            thead.innerHTML = "";
+
+            fragen.forEach((frage, index) => {
+                const row = document.createElement("tr");
+                row.innerHTML = `
+                    <td>
+                    <div class="d-flex flex-column">
+                    <div class="text text-center fw-bold">${index + 1}.</div>
+                    <div class="text text-center">${frage}</div>
+                    <div class="d-flex justify-content-around mt-1 mb-3">
+                        <div class="d-flex flex-column align-items-center">
+                            <div class="text text-center"><b>Stimmt:</b></div>
                             <div class="btn-group" id="btn-group-frage${index}" role="group" style="margin-right: 10px">
                                 <input type="radio" class="btn-check" name="frage${index}" id="btnradio1-frage${index}" autocomplete="off" value="1" required>
                                 <label class="btn btn-outline-primary" for="btnradio1-frage${index}">Genau</label>
@@ -201,8 +211,10 @@
                                 <input type="radio" class="btn-check" name="frage${index}" id="btnradio3-frage${index}" autocomplete="off" value="0">
                                 <label class="btn btn-outline-danger" for="btnradio3-frage${index}">Nicht</label>
                             </div>
-
-                            <div class="text text-center" style="margin-right: 5px"><b>Stört dich das?:</b></div>
+                        </div>
+                        
+                        <div class="d-flex flex-column align-items-center">
+                        <div class="text text-center"><b>Stört dich das?</b></div>
                             <div class="btn-group" role="group">
                                 <input type="radio" class="btn-check" name="problem${index}" id="btnradio1-problem${index}" autocomplete="off" value="1" required>
                                 <label class="btn btn-outline-primary" for="btnradio1-problem${index}">Ja</label>
@@ -211,19 +223,91 @@
                                 <label class="btn btn-outline-danger" for="btnradio2-problem${index}">Nein</label>
                             </div>
                         </div>
+                    </div>
+                    </div>
                     </td>
-                    `;
-                    tbody.appendChild(row);
-                }
+                `;
+                tbody.appendChild(row);
             });
         }
-        else{
+    }
 
+    function make_table_results() {
+        const thead = document.getElementById("tabelle-res-head");
+        thead.innerHTML = "";
+        const tbody = document.getElementById("tabelle-res-body");
+        tbody.innerHTML = "";
+
+        if (width > width_tiny){
+            thead.innerHTML=`
+                <tr>
+                    <th></th>
+                    <th class="text-center">Überlegenheit</th>
+                    <th class="text-center">Kontrolle</th>
+                    <th class="text-center">Gefallen</th>
+                    <th class="text-center">Bequemlichkeit</th>
+                </tr>
+            `;
+
+            tbody.innerHTML=`
+                <tr>
+                    <th class="text-end">Punkte:</th>
+                    <td class="text-center" id="punkte-u"></td>
+                    <td class="text-center" id="punkte-k"></td>
+                    <td class="text-center" id="punkte-g"></td>
+                    <td class="text-center" id="punkte-b"></td>
+                </tr>
+                <tr>
+                    <th class="text-end">Probleme:</th>
+                    <td class="text-center" id="probleme-u"></td>
+                    <td class="text-center" id="probleme-k"></td>
+                    <td class="text-center" id="probleme-g"></td>
+                    <td class="text-center" id="probleme-b"></td>
+                </tr>
+            `;
+        }else{
+            thead.innerHTML=`
+                <tr>
+                    <th></th>
+                    <th class="text-center">Punkte</th>
+                    <th class="text-center">Probleme</th>
+
+<!--                    <th class="text-center">Überlegenheit</th>-->
+<!--                    <th class="text-center">Kontrolle</th>-->
+<!--                    <th class="text-center">Gefallen</th>-->
+<!--                    <th class="text-center">Bequemlichkeit</th>-->
+                </tr>
+            `;
+
+            tbody.innerHTML=`
+                <tr>
+                    <td class="text-end fw-bold">Überlegenheit:</td>
+                    <td class="text-center" id="punkte-u"></td>
+                    <td class="text-center" id="probleme-u"></td>
+                </tr>
+                <tr>
+                    <td class="text-end fw-bold">Kontrolle:</td>
+                    <td class="text-center" id="punkte-k"></td>
+                    <td class="text-center" id="probleme-k"></td>
+                </tr>
+                <tr>
+                    <td class="text-end fw-bold">Gefallen:</td>
+                    <td class="text-center" id="punkte-g"></td>
+                    <td class="text-center" id="probleme-g"></td>
+                </tr>
+                <tr>
+                    <td class="text-end fw-bold">Bequemlichkeit:</td>
+                    <td class="text-center" id="punkte-b"></td>
+                    <td class="text-center" id="probleme-b"></td>
+                </tr>
+            `;
         }
     }
+
     make_table();
 
     function eval() {
+        make_table_results();
         const formData = new FormData(document.getElementById("fragebogenForm"));
 
         function count_points(str) {
