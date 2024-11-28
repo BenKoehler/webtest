@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Die vier Prioritäten Fragebogen</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <style>
+        table {
+            width: 100%;
+        }
+
+        th {
+            text-align: center;
+            vertical-align: middle;
+        }
+
+        td {
+            vertical-align: middle;
+        }
+    </style>
+</head>
+<body>
+<div class="container justify-content-center">
+    <h1 class="text-center mb-4">Die vier Prioritäten</h1>
+    <form id="fragebogenForm">
+        <table class="table table-sm table-striped">
+            <thead>
+            <tr>
+                <th scope="col">Aussage</th>
+                <th scope="col">Stimmt</th>
+                <th scope="col">Stört dich das?</th>
+            </tr>
+            </thead>
+            <tbody id="tabelle-fragebogen">
+            </tbody>
+        </table>
+    </form>
+    <div class="d-flex justify-content-center ml-0 mr-0">
+        <button class="btn btn-primary btn-lg mt-4 mb-4 w-50" onclick="eval()">Auswerten</button>
+    </div>
+    <div id="missing-answer-caption-div"></div>
+    <div id="missing-answer-list-div"></div>
+    <table class="table table-sm" id="tabelle-ergebnisse" style="visibility: hidden">
+        <thead>
+        <tr>
+            <th></th>
+            <th class="text-center">Überlegenheit</th>
+            <th class="text-center">Kontrolle</th>
+            <th class="text-center">Gefallen</th>
+            <th class="text-center">Bequemlichkeit</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <th class="text-end">Punkte:</th>
+            <td class="text-center" id="punkte-u"></td>
+            <td class="text-center" id="punkte-k"></td>
+            <td class="text-center" id="punkte-g"></td>
+            <td class="text-center" id="punkte-b"></td>
+        </tr>
+        <tr>
+            <th class="text-end">Probleme:</th>
+            <td class="text-center" id="probleme-u"></td>
+            <td class="text-center" id="probleme-k"></td>
+            <td class="text-center" id="probleme-g"></td>
+            <td class="text-center" id="probleme-b"></td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+<script>
+    const fragen = [
+        "Ich habe Angst bedeutungslos zu sein.",
+        "Ich erlebe mich oft in einem Abstand von anderen Menschen.",
+        "Ich strenge mich an, damit ich von möglichst vielen akzeptiert werde.",
+        "Ich lasse mir gerne helfen.",
+        "Weil ich nicht eine/r unter vielen sein will, ist es mir wichtig, aus der Masse herauszuragen.",
+        "Mit meinen Gefühlen bin ich ziemlich zurückhaltend, d.h. ich sage lieber was ich denke als was ich fühle.",
+        "Mir geht oft die Frage durch den Kopf, ob die Leute mich wohl mögen, und ob ich willkommen bin.",
+        "Unruhe, Hast, Störungen und Veränderungen können mich derart stören, dass ich mich ganz unwohl fühle.",
+        "Ich spüre in mir ein Streben nach „besser sein“ als andere. Dafür strenge ich mich auch an.",
+        "Ich glaube, ich kann mich nicht gut anvertrauen, nicht „fallen lassen“.",
+        "Ich glaube, die Angst abgelehnt zu werden, ist bei mir sehr stark.",
+        "Ich möchte in Ruhe gelassen werden.",
+        "Für meine Art zu leben, zahle ich den Preis, dass ich zu viel tun und zu viel Verantwortung tragen muss.",
+        "Es ist mir sehr wichtig, meiner Sache sicher zu sein.",
+        "Ich wage es nicht gern, meine Meinung zu sagen, wenn sie von der der anderen abweicht.",
+        "Ich stehe ungern unter Leistungsdruck.",
+        "Wichtig ist für mich nicht, ob eine Sache gut läuft, sondern ob die entscheidenden Anstöße von mir kamen.",
+        "Ich fürchte, dass meine spontanen Äußerungen später wieder gegen mich verwendet werden können.",
+        "Ich kann nicht gut „nein“ sagen.",
+        "Ich leiste vielleicht nicht ganz so viel wie andere, aber meine Ruhe und Gemütlichkeit sind mir wichtiger.",
+        "Ich kann mir denken, dass manche Leute sich klein und verlegen fühlen, wenn sie sehen, was ich so aus meinem Leben mache.",
+        "Halb vorbereitet in eine Situation hineinzuspringen, das liegt mir gar nicht.",
+        "Ich versuche festzustellen, was andere von mir erwarten, damit ich diese Erwartung womöglich erfüllen kann.",
+        "Körperliche Schmerzen, auch wenn sie nur kurz dauern, gehe ich grundsätzlich aus dem Weg.",
+        "Wenn ich mein Leben so betrachte, kommt es mir vor, als ob ich gut mit Leuten umgehen kann, die mir unterlegen sind, und auch mit solchen, die ich als Autorität akzeptiere, aber Freundschaften kann ich offensichtlich nicht auf Dauer halten.",
+        "Es ist mir sehr wichtig, die Übersicht zu behalten.",
+        "Wenn ich den Erwartungen anderer zuwiderhandeln muss, fühle ich mich wie gelähmt und entscheidungsunfähig.",
+        "Im Grunde ist mein tiefster Wunsch, ein bequemes Leben zu haben ohne viele Konflikte."
+    ];
+
+    const tbody = document.getElementById("tabelle-fragebogen");
+    fragen.forEach((frage, index) => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+                <td><b>${index + 1}</b>. ${frage}</td>
+                <td>
+                    <div class="btn-group" role="group">
+                        <input type="radio" class="btn-check" name="frage${index}" id="btnradio1-frage${index}" autocomplete="off" value="1" required>
+                        <label class="btn btn-outline-primary" for="btnradio1-frage${index}">Genau</label>
+
+                        <input type="radio" class="btn-check" name="frage${index}" id="btnradio2-frage${index}" autocomplete="off" value="0.5">
+                        <label class="btn btn-outline-secondary" for="btnradio2-frage${index}">Etwa</label>
+
+                        <input type="radio" class="btn-check" name="frage${index}" id="btnradio3-frage${index}" autocomplete="off" value="0">
+                        <label class="btn btn-outline-danger" for="btnradio3-frage${index}">Nicht</label>
+                    </div>
+                </td>
+                <td>
+                    <div class="btn-group" role="group">
+                        <input type="radio" class="btn-check" name="problem${index}" id="btnradio1-problem${index}" autocomplete="off" value="1" required>
+                        <label class="btn btn-outline-primary" for="btnradio1-problem${index}">Ja</label>
+
+                        <input type="radio" class="btn-check" name="problem${index}" id="btnradio2-problem${index}" autocomplete="off" value="0">
+                        <label class="btn btn-outline-danger" for="btnradio2-problem${index}">Nein</label>
+                    </div>
+                </td>
+            `;
+
+        tbody.appendChild(row);
+    });
+
+    function eval() {
+        const formData = new FormData(document.getElementById("fragebogenForm"));
+
+        function count_points(str) {
+            const data = fragen.map((_, index) => parseFloat(formData.get(str + `${index}`)) || 0);
+            let res = [0, 0, 0, 0];
+            for (let i = 0; i < fragen.length; ++i) {
+                if (i % 4 === 0) res[0] += data[i];
+                else if (i % 4 === 1) res[1] += data[i];
+                else if (i % 4 === 2) res[2] += data[i];
+                else if (i % 4 === 3) res[3] += data[i];
+            }
+            return res;
+        }
+
+        const punkte = count_points('frage');
+        document.getElementById("punkte-u").textContent = punkte[0].toString();
+        document.getElementById("punkte-k").textContent = punkte[1].toString();
+        document.getElementById("punkte-g").textContent = punkte[2].toString();
+        document.getElementById("punkte-b").textContent = punkte[3].toString();
+
+        const probleme = count_points('problem');
+        document.getElementById("probleme-u").textContent = probleme[0].toString();
+        document.getElementById("probleme-k").textContent = probleme[1].toString();
+        document.getElementById("probleme-g").textContent = probleme[2].toString();
+        document.getElementById("probleme-b").textContent = probleme[3].toString();
+
+        function get_missing_entries() {
+            const data_q = fragen.map((_, index) => parseFloat(formData.get(`frage${index}`)));
+            const data_p = fragen.map((_, index) => parseFloat(formData.get(`problem${index}`)));
+            let res = [];
+            for (let i = 0; i < fragen.length; ++i) {
+                if (isNaN(data_q[i]) || isNaN(data_p[i])) {
+                    res.push(i + 1);
+                }
+            }
+            return res;
+        }
+
+        const div_missing_caption = document.getElementById("missing-answer-caption-div");
+        div_missing_caption.innerHTML = "";
+        div_missing_caption.className = "";
+        const div_missing_list = document.getElementById("missing-answer-list-div");
+        div_missing_list.innerHTML = "";
+        div_missing_list.className = "";
+
+        const missing_answers = get_missing_entries('frage');
+        if (missing_answers.length !== 0) {
+            let str = "";
+            for (let i = 0; i < missing_answers.length; ++i) {
+                str += missing_answers[i].toString();
+                if (i !== missing_answers.length - 1) {
+                    str += ", ";
+                }
+            }
+
+            div_missing_caption.className = "d-flex justify-content-center mb-1";
+            const caption = document.createElement("div");
+            caption.className = "text-center text-danger";
+            caption.innerHTML = "<b>Unvollständige Antwort in den Fragen</b>:";
+            div_missing_caption.appendChild(caption);
+
+            div_missing_list.className = "d-flex justify-content-center mb-4";
+            const list = document.createElement("div");
+            list.className = "text-center text-danger";
+            list.innerHTML = str;
+            div_missing_list.appendChild(list);
+        }
+
+        document.getElementById("tabelle-ergebnisse").style.visibility = "visible";
+    }
+</script>
+</body>
+</html>
