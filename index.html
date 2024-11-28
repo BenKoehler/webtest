@@ -99,13 +99,44 @@
         "Im Grunde ist mein tiefster Wunsch, ein bequemes Leben zu haben ohne viele Konflikte."
     ];
 
+    const body = document.getElementsByTagName("BODY")[0];
+    let width = body.offsetWidth;
+
+    if (window.addEventListener) {  // all browsers except IE before version 9
+        window.addEventListener("resize", onResizeEvent, true);
+    } else {
+        if (window.attachEvent) {   // IE before version 9
+            window.attachEvent("onresize", onResizeEvent);
+        }
+    }
+
+    function onResizeEvent() {
+        const bodyElement = document.getElementsByTagName("BODY")[0];
+        const newWidth = bodyElement.offsetWidth;
+        if (newWidth !== width) {
+            width = newWidth;
+            console.log(width); // todo remove
+
+            if (width <= 752) {
+                for (let i = 0; i < fragen.length; ++i) {
+                    document.getElementById('btn-group-frage' + i.toString()).style.marginRight = "5px";
+                }
+            } else {
+                for (let i = 0; i < fragen.length; ++i) {
+                    document.getElementById('btn-group-frage' + i.toString()).style.marginRight = "10px";
+                }
+            }
+            // todo
+        }
+    }
+
     const tbody = document.getElementById("tabelle-fragebogen");
     fragen.forEach((frage, index) => {
         const row = document.createElement("tr");
         row.innerHTML = `
                 <td><b>${index + 1}</b>. ${frage}</td>
                 <td>
-                    <div class="btn-group" role="group">
+                    <div class="btn-group" id="btn-group-frage${index}" role="group" style="margin-right: 10px">
                         <input type="radio" class="btn-check" name="frage${index}" id="btnradio1-frage${index}" autocomplete="off" value="1" required>
                         <label class="btn btn-outline-primary" for="btnradio1-frage${index}">Genau</label>
 
