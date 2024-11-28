@@ -160,9 +160,9 @@
                 row.innerHTML = `
                     <td>
                     <div class="d-flex flex-column">
-                    <div class="text text-center"><b>${index + 1}.</b> ${frage}</div>
+                    <div class="text text-center">${index + 1}. <b>${frage}</b></div>
                     <div class="d-flex align-items-center mt-1 mb-3">
-                        <div class="text text-center" style="margin-right: 5px"><b>Stimmt:</b></div>
+                        <div class="text text-center" style="margin-right: 5px">Stimmt:</div>
                         <div class="btn-group" id="btn-group-frage${index}" role="group" style="margin-right: 10px">
                             <input type="radio" class="btn-check" name="frage${index}" id="btnradio1-frage${index}" autocomplete="off" value="1" required>
                             <label class="btn btn-outline-primary" for="btnradio1-frage${index}">Genau</label>
@@ -174,7 +174,7 @@
                             <label class="btn btn-outline-danger" for="btnradio3-frage${index}">Nicht</label>
                         </div>
 
-                        <div class="text text-center" style="margin-right: 5px"><b>Stört dich das?</b></div>
+                        <div class="text text-center" style="margin-right: 5px">Stört dich das?</div>
                         <div class="btn-group" role="group">
                             <input type="radio" class="btn-check" name="problem${index}" id="btnradio1-problem${index}" autocomplete="off" value="1" required>
                             <label class="btn btn-outline-primary" for="btnradio1-problem${index}">Ja</label>
@@ -196,11 +196,10 @@
                 row.innerHTML = `
                     <td>
                     <div class="d-flex flex-column">
-                    <div class="text text-center fw-bold">${index + 1}.</div>
-                    <div class="text text-center">${frage}</div>
+                    <div class="text text-center">${index + 1}. <b>${frage}</b></div>
                     <div class="d-flex justify-content-around mt-1 mb-3">
                         <div class="d-flex flex-column align-items-center">
-                            <div class="text text-center"><b>Stimmt:</b></div>
+                            <div class="text text-center">Stimmt:</div>
                             <div class="btn-group" id="btn-group-frage${index}" role="group" style="margin-right: 10px">
                                 <input type="radio" class="btn-check" name="frage${index}" id="btnradio1-frage${index}" autocomplete="off" value="1" required>
                                 <label class="btn btn-outline-primary" for="btnradio1-frage${index}">Genau</label>
@@ -214,7 +213,7 @@
                         </div>
                         
                         <div class="d-flex flex-column align-items-center">
-                        <div class="text text-center"><b>Stört dich das?</b></div>
+                        <div class="text text-center">Stört dich das?</div>
                             <div class="btn-group" role="group">
                                 <input type="radio" class="btn-check" name="problem${index}" id="btnradio1-problem${index}" autocomplete="off" value="1" required>
                                 <label class="btn btn-outline-primary" for="btnradio1-problem${index}">Ja</label>
