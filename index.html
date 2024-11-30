@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Die vier Prioritäten Fragebogen</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+        <link href="bootstrap.min.css" rel="stylesheet">
+        <script src="bootstrap.bundle.min.js"></script>
     <style>
         th {
             text-align: center;
@@ -22,35 +22,40 @@
     <h1 class="text-center mb-4">Die vier Prioritäten</h1>
     <form id="fragebogenForm">
         <table class="table table-sm table-striped">
-            <thead id="tabelle-fragebogen-head">
+            <thead>
+            <tr>
+                <th scope="col">Aussage</th>
+                <th scope="col">Stimmt</th>
+                <th scope="col">Stört dich das?</th>
+            </tr>
             </thead>
             <tbody id="tabelle-fragebogen">
             </tbody>
         </table>
     </form>
-    <div class="d-flex justify-content-center ml-0 mr-0">
+    <div class="d-flex justify-content-center ml-0 mr-0 p-0">
         <button class="btn btn-primary btn-lg mt-4 mb-4 w-50" onclick="eval()">Auswerten</button>
     </div>
     <div id="missing-answer-caption-div"></div>
     <div id="missing-answer-list-div"></div>
-    <table class="table table-sm" id="tabelle-ergebnisse" style="visibility: hidden">
+    <table class="table table-sm" id="tabelle-ergebnisse">
         <thead id="tabelle-res-head"></thead>
         <tbody id="tabelle-res-body"></tbody>
     </table>
 </div>
 
 <script>
-    const fragen = [
-        "Ich habe Angst bedeutungslos zu sein.",
+    const fragen = [ // u, k, g, b, u, k, g, b, ...
+        "Ich habe Angst, bedeutungslos zu sein.",
         "Ich erlebe mich oft in einem Abstand von anderen Menschen.",
         "Ich strenge mich an, damit ich von möglichst vielen akzeptiert werde.",
         "Ich lasse mir gerne helfen.",
         "Weil ich nicht eine/r unter vielen sein will, ist es mir wichtig, aus der Masse herauszuragen.",
-        "Mit meinen Gefühlen bin ich ziemlich zurückhaltend, d.h. ich sage lieber was ich denke als was ich fühle.",
+        "Mit meinen Gefühlen bin ich ziemlich zurückhaltend, d.h. ich sage lieber was ich denke, als was ich fühle.",
         "Mir geht oft die Frage durch den Kopf, ob die Leute mich wohl mögen, und ob ich willkommen bin.",
         "Unruhe, Hast, Störungen und Veränderungen können mich derart stören, dass ich mich ganz unwohl fühle.",
-        "Ich spüre in mir ein Streben nach „besser sein“ als andere. Dafür strenge ich mich auch an.",
-        "Ich glaube, ich kann mich nicht gut anvertrauen, nicht „fallen lassen“.",
+        "Ich spüre in mir ein Streben nach \"besser sein\" als andere. Dafür strenge ich mich auch an.",
+        "Ich glaube, ich kann mich nicht gut anvertrauen, nicht \"fallen lassen\".",
         "Ich glaube, die Angst abgelehnt zu werden, ist bei mir sehr stark.",
         "Ich möchte in Ruhe gelassen werden.",
         "Für meine Art zu leben, zahle ich den Preis, dass ich zu viel tun und zu viel Verantwortung tragen muss.",
@@ -71,165 +76,35 @@
         "Im Grunde ist mein tiefster Wunsch, ein bequemes Leben zu haben ohne viele Konflikte."
     ];
 
-    const body = document.getElementsByTagName("BODY")[0];
-    let width = body.offsetWidth;
+    const tbody = document.getElementById("tabelle-fragebogen");
+    fragen.forEach((frage, index) => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+                <td><b>${index + 1}.</b> ${frage}</td>
+                <td>
+                    <div class="btn-group" role="group">
+                        <input type="radio" class="btn-check" name="frage${index}" id="btnradio1-frage${index}" autocomplete="off" value="1" required>
+                        <label class="btn btn-outline-primary" for="btnradio1-frage${index}">Genau</label>
 
-    if (window.addEventListener) {  // all browsers except IE before version 9
-        window.addEventListener("resize", onResizeEvent, true);
-    } else {
-        if (window.attachEvent) {   // IE before version 9
-            window.attachEvent("onresize", onResizeEvent);
-        }
-    }
+                        <input type="radio" class="btn-check" name="frage${index}" id="btnradio2-frage${index}" autocomplete="off" value="0.5">
+                        <label class="btn btn-outline-secondary" for="btnradio2-frage${index}">Etwa</label>
 
-    function onResizeEvent() {
-        const newWidth = window.innerWidth;
-        if (newWidth !== width) {
-            width = newWidth;
-            console.log(width); // todo remove
+                        <input type="radio" class="btn-check" name="frage${index}" id="btnradio3-frage${index}" autocomplete="off" value="0">
+                        <label class="btn btn-outline-danger" for="btnradio3-frage${index}">Nicht</label>
+                    </div>
+                </td>
+                <td>
+                    <div class="btn-group" role="group">
+                        <input type="radio" class="btn-check" name="problem${index}" id="btnradio1-problem${index}" autocomplete="off" value="1" required>
+                        <label class="btn btn-outline-primary" for="btnradio1-problem${index}">Ja</label>
 
-            make_table();
-
-            // if (width >= 545 && width <= 752) {
-            //     for (let i = 0; i < fragen.length; ++i) {
-            //         document.getElementById('btn-group-frage' + i.toString()).style.marginRight = "5px";
-            //     }
-            // } else {
-            //     for (let i = 0; i < fragen.length; ++i) {
-            //         document.getElementById('btn-group-frage' + i.toString()).style.marginRight = "10px";
-            //     }
-            // }
-
-
-            // todo
-        }
-    }
-
-    const width_small = 767;
-    const width_tiny = 552;
-
-    function make_table() {
-        const thead = document.getElementById("tabelle-fragebogen-head");
-        const tbody = document.getElementById("tabelle-fragebogen");
-        tbody.innerHTML = "";
-
-        if (width > width_small) {
-            thead.innerHTML = `
-            <tr>
-                <th scope="col">Aussage</th>
-                <th scope="col">Stimmt</th>
-                <th scope="col">Stört dich das?</th>
-            </tr>
+                        <input type="radio" class="btn-check" name="problem${index}" id="btnradio2-problem${index}" autocomplete="off" value="0">
+                        <label class="btn btn-outline-danger" for="btnradio2-problem${index}">Nein</label>
+                    </div>
+                </td>
             `;
-
-            fragen.forEach((frage, index) => {
-                const row = document.createElement("tr");
-                row.innerHTML = `
-                    <td><b>${index + 1}</b>. ${frage}</td>
-                    <td>
-                        <div class="btn-group" id="btn-group-frage${index}" role="group" style="margin-right: 10px">
-                            <input type="radio" class="btn-check" name="frage${index}" id="btnradio1-frage${index}" autocomplete="off" value="1" required>
-                            <label class="btn btn-outline-primary" for="btnradio1-frage${index}">Genau</label>
-
-                            <input type="radio" class="btn-check" name="frage${index}" id="btnradio2-frage${index}" autocomplete="off" value="0.5">
-                            <label class="btn btn-outline-secondary" for="btnradio2-frage${index}">Etwa</label>
-
-                            <input type="radio" class="btn-check" name="frage${index}" id="btnradio3-frage${index}" autocomplete="off" value="0">
-                            <label class="btn btn-outline-danger" for="btnradio3-frage${index}">Nicht</label>
-                        </div>
-                    </td>
-                    <td>
-                        <div class="btn-group" role="group">
-                            <input type="radio" class="btn-check" name="problem${index}" id="btnradio1-problem${index}" autocomplete="off" value="1" required>
-                            <label class="btn btn-outline-primary" for="btnradio1-problem${index}">Ja</label>
-
-                            <input type="radio" class="btn-check" name="problem${index}" id="btnradio2-problem${index}" autocomplete="off" value="0">
-                            <label class="btn btn-outline-danger" for="btnradio2-problem${index}">Nein</label>
-                        </div>
-                    </td>
-                `;
-
-                tbody.appendChild(row);
-            });
-
-        } else if (width > width_tiny) {
-            thead.innerHTML = "";
-
-            fragen.forEach((frage, index) => {
-                const row = document.createElement("tr");
-                row.innerHTML = `
-                    <td>
-                    <div class="d-flex flex-column">
-                    <div class="text text-center">${index + 1}. <b>${frage}</b></div>
-                    <div class="d-flex align-items-center mt-1 mb-3">
-                        <div class="text text-center" style="margin-right: 5px">Stimmt:</div>
-                        <div class="btn-group" id="btn-group-frage${index}" role="group" style="margin-right: 10px">
-                            <input type="radio" class="btn-check" name="frage${index}" id="btnradio1-frage${index}" autocomplete="off" value="1" required>
-                            <label class="btn btn-outline-primary" for="btnradio1-frage${index}">Genau</label>
-
-                            <input type="radio" class="btn-check" name="frage${index}" id="btnradio2-frage${index}" autocomplete="off" value="0.5">
-                            <label class="btn btn-outline-secondary" for="btnradio2-frage${index}">Etwa</label>
-
-                            <input type="radio" class="btn-check" name="frage${index}" id="btnradio3-frage${index}" autocomplete="off" value="0">
-                            <label class="btn btn-outline-danger" for="btnradio3-frage${index}">Nicht</label>
-                        </div>
-
-                        <div class="text text-center" style="margin-right: 5px">Stört dich das?</div>
-                        <div class="btn-group" role="group">
-                            <input type="radio" class="btn-check" name="problem${index}" id="btnradio1-problem${index}" autocomplete="off" value="1" required>
-                            <label class="btn btn-outline-primary" for="btnradio1-problem${index}">Ja</label>
-
-                            <input type="radio" class="btn-check" name="problem${index}" id="btnradio2-problem${index}" autocomplete="off" value="0">
-                            <label class="btn btn-outline-danger" for="btnradio2-problem${index}">Nein</label>
-                        </div>
-                    </div>
-                    </div>
-                    </td>
-                `;
-                tbody.appendChild(row);
-            });
-        } else {
-            thead.innerHTML = "";
-
-            fragen.forEach((frage, index) => {
-                const row = document.createElement("tr");
-                row.innerHTML = `
-                    <td>
-                    <div class="d-flex flex-column">
-                    <div class="text text-center">${index + 1}. <b>${frage}</b></div>
-                    <div class="d-flex justify-content-around mt-1 mb-3">
-                        <div class="d-flex flex-column align-items-center">
-                            <div class="text text-center">Stimmt:</div>
-                            <div class="btn-group" id="btn-group-frage${index}" role="group" style="margin-right: 10px">
-                                <input type="radio" class="btn-check" name="frage${index}" id="btnradio1-frage${index}" autocomplete="off" value="1" required>
-                                <label class="btn btn-outline-primary" for="btnradio1-frage${index}">Genau</label>
-
-                                <input type="radio" class="btn-check" name="frage${index}" id="btnradio2-frage${index}" autocomplete="off" value="0.5">
-                                <label class="btn btn-outline-secondary" for="btnradio2-frage${index}">Etwa</label>
-
-                                <input type="radio" class="btn-check" name="frage${index}" id="btnradio3-frage${index}" autocomplete="off" value="0">
-                                <label class="btn btn-outline-danger" for="btnradio3-frage${index}">Nicht</label>
-                            </div>
-                        </div>
-                        
-                        <div class="d-flex flex-column align-items-center">
-                        <div class="text text-center">Stört dich das?</div>
-                            <div class="btn-group" role="group">
-                                <input type="radio" class="btn-check" name="problem${index}" id="btnradio1-problem${index}" autocomplete="off" value="1" required>
-                                <label class="btn btn-outline-primary" for="btnradio1-problem${index}">Ja</label>
-
-                                <input type="radio" class="btn-check" name="problem${index}" id="btnradio2-problem${index}" autocomplete="off" value="0">
-                                <label class="btn btn-outline-danger" for="btnradio2-problem${index}">Nein</label>
-                            </div>
-                        </div>
-                    </div>
-                    </div>
-                    </td>
-                `;
-                tbody.appendChild(row);
-            });
-        }
-    }
+        tbody.appendChild(row);
+    });
 
     function make_table_results() {
         const thead = document.getElementById("tabelle-res-head");
@@ -237,113 +112,94 @@
         const tbody = document.getElementById("tabelle-res-body");
         tbody.innerHTML = "";
 
-        if (width > width_tiny){
-            thead.innerHTML=`
+        const width_tiny = 552;
+        if (window.innerWidth > width_tiny) {
+            thead.innerHTML = `
                 <tr>
                     <th></th>
-                    <th class="text-center">Überlegenheit</th>
-                    <th class="text-center">Kontrolle</th>
-                    <th class="text-center">Gefallen</th>
-                    <th class="text-center">Bequemlichkeit</th>
+                    <th class="text text-center">Überlegenheit</th>
+                    <th class="text text-center">Kontrolle</th>
+                    <th class="text text-center">Gefallen</th>
+                    <th class="text text-center">Bequemlichkeit</th>
                 </tr>
             `;
 
-            tbody.innerHTML=`
+            tbody.innerHTML = `
                 <tr>
-                    <th class="text-end">Punkte:</th>
-                    <td class="text-center" id="punkte-u"></td>
-                    <td class="text-center" id="punkte-k"></td>
-                    <td class="text-center" id="punkte-g"></td>
-                    <td class="text-center" id="punkte-b"></td>
+                    <th class="text text-end">Punkte:</th>
+                    <td class="text text-center" id="punkte-u"></td>
+                    <td class="text text-center" id="punkte-k"></td>
+                    <td class="text text-center" id="punkte-g"></td>
+                    <td class="text text-center" id="punkte-b"></td>
                 </tr>
                 <tr>
-                    <th class="text-end">Probleme:</th>
-                    <td class="text-center" id="probleme-u"></td>
-                    <td class="text-center" id="probleme-k"></td>
-                    <td class="text-center" id="probleme-g"></td>
-                    <td class="text-center" id="probleme-b"></td>
+                    <th class="text text-end">Probleme:</th>
+                    <td class="text text-center" id="probleme-u"></td>
+                    <td class="text text-center" id="probleme-k"></td>
+                    <td class="text text-center" id="probleme-g"></td>
+                    <td class="text text-center" id="probleme-b"></td>
                 </tr>
             `;
-        }else{
-            thead.innerHTML=`
+        } else {
+            thead.innerHTML = `
                 <tr>
                     <th></th>
-                    <th class="text-center">Punkte</th>
-                    <th class="text-center">Probleme</th>
-
-<!--                    <th class="text-center">Überlegenheit</th>-->
-<!--                    <th class="text-center">Kontrolle</th>-->
-<!--                    <th class="text-center">Gefallen</th>-->
-<!--                    <th class="text-center">Bequemlichkeit</th>-->
+                    <th class="text text-center">Punkte</th>
+                    <th class="text text-center">Probleme</th>
                 </tr>
             `;
 
-            tbody.innerHTML=`
+            tbody.innerHTML = `
                 <tr>
-                    <td class="text-end fw-bold">Überlegenheit:</td>
-                    <td class="text-center" id="punkte-u"></td>
-                    <td class="text-center" id="probleme-u"></td>
+                    <td class="text text-end fw-bold">Überlegenheit:</td>
+                    <td class="text text-center" id="punkte-u"></td>
+                    <td class="text text-center" id="probleme-u"></td>
                 </tr>
                 <tr>
-                    <td class="text-end fw-bold">Kontrolle:</td>
-                    <td class="text-center" id="punkte-k"></td>
-                    <td class="text-center" id="probleme-k"></td>
+                    <td class="text text-end fw-bold">Kontrolle:</td>
+                    <td class="text text-center" id="punkte-k"></td>
+                    <td class="text text-center" id="probleme-k"></td>
                 </tr>
                 <tr>
-                    <td class="text-end fw-bold">Gefallen:</td>
-                    <td class="text-center" id="punkte-g"></td>
-                    <td class="text-center" id="probleme-g"></td>
+                    <td class="text text-end fw-bold">Gefallen:</td>
+                    <td class="text text-center" id="punkte-g"></td>
+                    <td class="text text-center" id="probleme-g"></td>
                 </tr>
                 <tr>
-                    <td class="text-end fw-bold">Bequemlichkeit:</td>
-                    <td class="text-center" id="punkte-b"></td>
-                    <td class="text-center" id="probleme-b"></td>
+                    <td class="text text-end fw-bold">Bequemlichkeit:</td>
+                    <td class="text text-center" id="punkte-b"></td>
+                    <td class="text text-center" id="probleme-b"></td>
                 </tr>
             `;
         }
     }
 
-    make_table();
-
     function eval() {
         make_table_results();
-        const formData = new FormData(document.getElementById("fragebogenForm"));
 
-        function count_points(str) {
-            const data = fragen.map((_, index) => parseFloat(formData.get(str + `${index}`)) || 0);
-            let res = [0, 0, 0, 0];
-            for (let i = 0; i < fragen.length; ++i) {
-                if (i % 4 === 0) res[0] += data[i];
-                else if (i % 4 === 1) res[1] += data[i];
-                else if (i % 4 === 2) res[2] += data[i];
-                else if (i % 4 === 3) res[3] += data[i];
+        const formData = new FormData(document.getElementById("fragebogenForm"));
+        const data_punkte = fragen.map((_, index) => parseFloat(formData.get(`frage${index}`)));
+        const data_probleme = fragen.map((_, index) => parseFloat(formData.get(`problem${index}`)));
+        let punkte = [0, 0, 0, 0]; // u, k, g, b
+        let probleme = [0, 0, 0, 0]; // u, k, g, b
+        let missing_answers = [];
+        for (let i = 0; i < fragen.length; ++i) {
+            punkte[i % 4] += data_punkte[i] || 0;
+            probleme[i % 4] += data_probleme[i] || 0;
+            if (isNaN(data_punkte[i]) || isNaN(data_probleme[i])) {
+                missing_answers.push(i + 1);
             }
-            return res;
         }
 
-        const punkte = count_points('frage');
         document.getElementById("punkte-u").textContent = punkte[0].toString();
         document.getElementById("punkte-k").textContent = punkte[1].toString();
         document.getElementById("punkte-g").textContent = punkte[2].toString();
         document.getElementById("punkte-b").textContent = punkte[3].toString();
 
-        const probleme = count_points('problem');
         document.getElementById("probleme-u").textContent = probleme[0].toString();
         document.getElementById("probleme-k").textContent = probleme[1].toString();
         document.getElementById("probleme-g").textContent = probleme[2].toString();
         document.getElementById("probleme-b").textContent = probleme[3].toString();
-
-        function get_missing_entries() {
-            const data_q = fragen.map((_, index) => parseFloat(formData.get(`frage${index}`)));
-            const data_p = fragen.map((_, index) => parseFloat(formData.get(`problem${index}`)));
-            let res = [];
-            for (let i = 0; i < fragen.length; ++i) {
-                if (isNaN(data_q[i]) || isNaN(data_p[i])) {
-                    res.push(i + 1);
-                }
-            }
-            return res;
-        }
 
         const div_missing_caption = document.getElementById("missing-answer-caption-div");
         div_missing_caption.innerHTML = "";
@@ -352,7 +208,6 @@
         div_missing_list.innerHTML = "";
         div_missing_list.className = "";
 
-        const missing_answers = get_missing_entries('frage');
         if (missing_answers.length !== 0) {
             let str = "";
             for (let i = 0; i < missing_answers.length; ++i) {
@@ -364,8 +219,8 @@
 
             div_missing_caption.className = "d-flex justify-content-center mb-1";
             const caption = document.createElement("div");
-            caption.className = "text-center text-danger";
-            caption.innerHTML = "<b>Unvollständige Antwort in den Fragen</b>:";
+            caption.className = "text-center text-danger fw-bold";
+            caption.innerHTML = "Unvollständige Antwort in den Fragen:";
             div_missing_caption.appendChild(caption);
 
             div_missing_list.className = "d-flex justify-content-center mb-4";
