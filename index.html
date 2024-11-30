@@ -11,7 +11,6 @@
             text-align: center;
             vertical-align: middle;
         }
-
         td {
             vertical-align: middle;
         }
@@ -83,7 +82,7 @@
                 <td><b>${index + 1}.</b> ${frage}</td>
                 <td>
                     <div class="btn-group" role="group">
-                        <input type="radio" class="btn-check" name="frage${index}" id="btnradio1-frage${index}" autocomplete="off" value="1" required>
+                        <input type="radio" class="btn-check" name="frage${index}" id="btnradio1-frage${index}" autocomplete="off" value="1">
                         <label class="btn btn-outline-primary" for="btnradio1-frage${index}">Genau</label>
 
                         <input type="radio" class="btn-check" name="frage${index}" id="btnradio2-frage${index}" autocomplete="off" value="0.5">
@@ -95,7 +94,7 @@
                 </td>
                 <td>
                     <div class="btn-group" role="group">
-                        <input type="radio" class="btn-check" name="problem${index}" id="btnradio1-problem${index}" autocomplete="off" value="1" required>
+                        <input type="radio" class="btn-check" name="problem${index}" id="btnradio1-problem${index}" autocomplete="off" value="1">
                         <label class="btn btn-outline-primary" for="btnradio1-problem${index}">Ja</label>
 
                         <input type="radio" class="btn-check" name="problem${index}" id="btnradio2-problem${index}" autocomplete="off" value="0">
