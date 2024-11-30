@@ -81,7 +81,7 @@
         const row = document.createElement("tr");
         tbody.appendChild(row);
         row.innerHTML = `
-                <td><b>${index + 1}.</b> ${frage}</td>
+                <td id="col-caption-${index}"><b>${index + 1}.</b> ${frage}</td>
                 <td id="col-frage-${index}">
                     <div class="btn-group" role="group" id="group-frage-${index}">
                         <input type="radio" class="btn-check" name="frage${index}" id="rad1-frage${index}" autocomplete="off" value="1">
@@ -122,7 +122,6 @@
     let is_width_table_narrow = window.innerWidth <= width_table_narrow;
 
     function resize_table() {
-console.log("resize_table")
         for (let i = 0; i < fragen.length; ++i) {
             const col = [
                 document.getElementById("col-frage-" + i),
@@ -141,13 +140,25 @@ console.log("resize_table")
             if (is_width_table_narrow) {
                 for (const x of col) x.classList.add("p-1");
                 for (const x of group) x.classList.add("btn-group-sm");
-                for (const x of lab_frage) x.style.width = "50px";
-                for (const x of lab_problem) x.style.width = "40px";
+                for (const x of lab_frage) {
+                    x.style.width = "50px";
+                    x.classList.add("py-2");
+                }
+                for (const x of lab_problem) {
+                    x.style.width = "40px";
+                    x.classList.add("py-2");
+                }
             } else {
                 for (const x of col) x.classList.remove("p-1");
                 for (const x of group) x.classList.remove("btn-group-sm");
-                for (const x of lab_frage) x.style.width = "60px";
-                for (const x of lab_problem) x.style.width = "45px";
+                for (const x of lab_frage) {
+                    x.style.width = "60px";
+                    x.classList.remove("py-2");
+                }
+                for (const x of lab_problem) {
+                    x.style.width = "45px";
+                    x.classList.remove("py-2");
+                }
             }
         }
     }
