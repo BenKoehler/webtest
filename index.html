@@ -4,20 +4,21 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Die vier Prioritäten Fragebogen</title>
-        <link href="bootstrap.min.css" rel="stylesheet">
-        <script src="bootstrap.bundle.min.js"></script>
+    <link href="bootstrap.min.css" rel="stylesheet">
+    <script src="bootstrap.bundle.min.js"></script>
     <style>
         th {
             text-align: center;
             vertical-align: middle;
         }
+
         td {
             vertical-align: middle;
         }
     </style>
 </head>
 <body>
-<div class="container justify-content-center">
+<div class="container justify-content-center p-0">
     <h1 class="text-center mb-4">Die vier Prioritäten</h1>
     <form id="fragebogenForm">
         <table class="table table-sm table-striped">
@@ -32,7 +33,7 @@
             </tbody>
         </table>
     </form>
-    <div class="d-flex justify-content-center ml-0 mr-0 p-0">
+    <div class="d-flex justify-content-center mx-0 p-0">
         <button class="btn btn-primary btn-lg mt-4 mb-4 w-50" onclick="eval()">Auswerten</button>
     </div>
     <div id="missing-answer-caption-div"></div>
@@ -78,41 +79,99 @@
     const tbody = document.getElementById("tabelle-fragebogen");
     fragen.forEach((frage, index) => {
         const row = document.createElement("tr");
+        tbody.appendChild(row);
         row.innerHTML = `
                 <td><b>${index + 1}.</b> ${frage}</td>
-                <td>
-                    <div class="btn-group" role="group">
-                        <input type="radio" class="btn-check" name="frage${index}" id="btnradio1-frage${index}" autocomplete="off" value="1">
-                        <label class="btn btn-outline-primary" for="btnradio1-frage${index}">Genau</label>
+                <td id="col-frage-${index}">
+                    <div class="btn-group" role="group" id="group-frage-${index}">
+                        <input type="radio" class="btn-check" name="frage${index}" id="rad1-frage${index}" autocomplete="off" value="1">
+                        <label class="btn btn-outline-primary px-0" for="rad1-frage${index}" id="lab1-frage-${index}">Genau</label>
 
-                        <input type="radio" class="btn-check" name="frage${index}" id="btnradio2-frage${index}" autocomplete="off" value="0.5">
-                        <label class="btn btn-outline-secondary" for="btnradio2-frage${index}">Etwa</label>
+                        <input type="radio" class="btn-check" name="frage${index}" id="rad2-frage${index}" autocomplete="off" value="0.5">
+                        <label class="btn btn-outline-secondary px-0" for="rad2-frage${index}" id="lab2-frage-${index}">Etwa</label>
 
-                        <input type="radio" class="btn-check" name="frage${index}" id="btnradio3-frage${index}" autocomplete="off" value="0">
-                        <label class="btn btn-outline-danger" for="btnradio3-frage${index}">Nicht</label>
+                        <input type="radio" class="btn-check" name="frage${index}" id="rad3-frage${index}" autocomplete="off" value="0">
+                        <label class="btn btn-outline-danger px-0" for="rad3-frage${index}" id="lab3-frage-${index}">Nicht</label>
                     </div>
                 </td>
-                <td>
-                    <div class="btn-group" role="group">
-                        <input type="radio" class="btn-check" name="problem${index}" id="btnradio1-problem${index}" autocomplete="off" value="1">
-                        <label class="btn btn-outline-primary" for="btnradio1-problem${index}">Ja</label>
+                <td id="col-problem-${index}">
+                    <div class="btn-group" role="group" id="group-problem-${index}">
+                        <input type="radio" class="btn-check" name="problem${index}" id="rad1-problem${index}" autocomplete="off" value="1">
+                        <label class="btn btn-outline-primary px-0" for="rad1-problem${index}" id="lab1-problem-${index}">Ja</label>
 
-                        <input type="radio" class="btn-check" name="problem${index}" id="btnradio2-problem${index}" autocomplete="off" value="0">
-                        <label class="btn btn-outline-danger" for="btnradio2-problem${index}">Nein</label>
+                        <input type="radio" class="btn-check" name="problem${index}" id="rad2-problem${index}" autocomplete="off" value="0">
+                        <label class="btn btn-outline-danger px-0" for="rad2-problem${index}" id="lab2-problem-${index}">Nein</label>
                     </div>
                 </td>
             `;
-        tbody.appendChild(row);
     });
 
+    const width_result_table_narrow = 552;
+    let is_width_result_table_narrow = window.innerWidth <= width_result_table_narrow;
+    window.addEventListener('resize', function () {
+        const is_narrow = window.innerWidth <= width_result_table_narrow;
+        if (is_narrow !== is_width_result_table_narrow) {
+            is_width_result_table_narrow = is_narrow;
+            if (is_result_visible) {
+                eval();
+            }
+        }
+    });
+
+    const width_table_narrow = 495;
+    let is_width_table_narrow = window.innerWidth <= width_table_narrow;
+
+    function resize_table() {
+console.log("resize_table")
+        for (let i = 0; i < fragen.length; ++i) {
+            const col = [
+                document.getElementById("col-frage-" + i),
+                document.getElementById("col-problem-" + i)];
+            const group = [
+                document.getElementById("group-frage-" + i),
+                document.getElementById("group-problem-" + i)];
+            const lab_frage = [
+                document.getElementById("lab1-frage-" + i),
+                document.getElementById("lab2-frage-" + i),
+                document.getElementById("lab3-frage-" + i)];
+            const lab_problem = [
+                document.getElementById("lab1-problem-" + i),
+                document.getElementById("lab2-problem-" + i)];
+
+            if (is_width_table_narrow) {
+                for (const x of col) x.classList.add("p-1");
+                for (const x of group) x.classList.add("btn-group-sm");
+                for (const x of lab_frage) x.style.width = "50px";
+                for (const x of lab_problem) x.style.width = "40px";
+            } else {
+                for (const x of col) x.classList.remove("p-1");
+                for (const x of group) x.classList.remove("btn-group-sm");
+                for (const x of lab_frage) x.style.width = "60px";
+                for (const x of lab_problem) x.style.width = "45px";
+            }
+        }
+    }
+
+    window.addEventListener('resize', function () {
+        const is_narrow = window.innerWidth <= width_table_narrow;
+        if (is_narrow !== is_width_table_narrow) {
+            is_width_table_narrow = is_narrow;
+            resize_table();
+        }
+    });
+    resize_table();
+
+    let is_result_visible = false;
+
     function make_table_results() {
+        is_result_visible = true;
+
         const thead = document.getElementById("tabelle-res-head");
         thead.innerHTML = "";
         const tbody = document.getElementById("tabelle-res-body");
         tbody.innerHTML = "";
 
-        const width_tiny = 552;
-        if (window.innerWidth > width_tiny) {
+        if (window.innerWidth > width_result_table_narrow) {
             thead.innerHTML = `
                 <tr>
                     <th></th>
